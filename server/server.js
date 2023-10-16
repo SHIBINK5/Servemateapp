@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import connect from './Database/connection.js'; /**dont forget .js extension in backend otherwise error message */
+import router from './Router/route.js';
 
 
 const app= express();
@@ -19,7 +21,20 @@ app.get('/',(req,res)=>{
     res.status(201).json('Home GET request');
 });
 
-/**start server */
-app.listen(port,()=>{
-    console.log(`Server connected to http://localhost:${port}`);
+/**api routes */
+app.use('/api',router)
+
+
+/**start server only we have valid connection*/
+
+connect().then(()=>{
+    try {
+        app.listen(port,()=>{
+            console.log(`Server connected to http://localhost:${port}`);
+        }) 
+    } catch (error) {
+        console.log('Cannot connect to server');
+    }
+}).catch(error=>{
+    console.log('Invalid database connection..!');
 })
